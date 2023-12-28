@@ -86,33 +86,33 @@ router.get('/', async (req, res) => {
  * @example /api/v1/resources
 **/
 
-router.post('/', (req, res) => {
+// router.post('/', (req, res) => {
 
-    const newResource = new Resource({
-        resource_id: uuid.v4(),
-        title: req.body.title,
-        description: req.body.description,
-        category: req.body.category,
-        resources: req.body.resources
-    });
+//     const newResource = new Resource({
+//         resource_id: uuid.v4(),
+//         title: req.body.title,
+//         description: req.body.description,
+//         category: req.body.category,
+//         resources: req.body.resources
+//     });
 
-    newResource.save()
-        .then(resource => {
-            res.status(201).json({
-                status: 201,
-                message: 'Resource created successfully',
-                // data: resource
-            });
-        })
-        .catch(err => {
-            res.status(400).json({
-                status: 400,
-                message: 'Error creating resource',
-                error: err
-            });
-        });
+//     newResource.save()
+//         .then(resource => {
+//             res.status(201).json({
+//                 status: 201,
+//                 message: 'Resource created successfully',
+//                 // data: resource
+//             });
+//         })
+//         .catch(err => {
+//             res.status(400).json({
+//                 status: 400,
+//                 message: 'Error creating resource',
+//                 error: err
+//             });
+//         });
 
-});
+// });
 
 
 
