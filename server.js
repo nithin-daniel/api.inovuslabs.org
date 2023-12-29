@@ -5,7 +5,10 @@ const db = require('./config/db');
 db.connect();
 
 const express = require('express');
+var cors = require('cors')
+
 const app = express();
+app.use(cors())
 
 const routes = require('./routes');
 
