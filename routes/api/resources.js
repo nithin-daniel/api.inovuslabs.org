@@ -7,6 +7,8 @@ const moment = require("moment");
 const db = require('../../config/db');
 const Resource = require('../../models/resources');
 
+const verifyToken = require('../../middleware/_auth');
+
 
 
 /**
@@ -25,7 +27,7 @@ const Resource = require('../../models/resources');
 **/
 
 router.get('/', async (req, res) => {
-    
+
     let page = parseInt(req.query.page) || 1;
     let limit = parseInt(req.query.limit) || 10;
     let search = req.query.search || null;
@@ -86,33 +88,33 @@ router.get('/', async (req, res) => {
  * @example /api/v1/resources
 **/
 
-// router.post('/', (req, res) => {
+router.post('/', verifyToken, async (req, res) => {
 
-//     const newResource = new Resource({
-//         resource_id: nanoid(),
-//         title: req.body.title,
-//         description: req.body.description,
-//         category: req.body.category,
-//         resources: req.body.resources
-//     });
+    const newResource = new Resource({
+        resource_id: nanoid(),
+        title: req.body.title,
+        description: req.body.description,
+        category: req.body.category,
+        resources: req.body.resources
+    });
 
-//     newResource.save()
-//         .then(resource => {
-//             res.status(201).json({
-//                 status: 201,
-//                 message: 'Resource created successfully',
-//                 // data: resource
-//             });
-//         })
-//         .catch(err => {
-//             res.status(400).json({
-//                 status: 400,
-//                 message: 'Error creating resource',
-//                 error: err
-//             });
-//         });
+    newResource.save()
+        .then(resource => {
+            res.status(201).json({
+                status: 201,
+                message: 'Resource created successfully',
+                data: resource
+            });
+        })
+        .catch(err => {
+            res.status(400).json({
+                status: 400,
+                message: 'Error creating resource',
+                error: err
+            });
+        });
+});
 
-// });
 
 
 
