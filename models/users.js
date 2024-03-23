@@ -1,60 +1,74 @@
+
 const mongoose = require('mongoose');
 const { nanoid } = require('nanoid');
 
-
 const UserSchema = new mongoose.Schema({
-    user_id:{
-        type:String,
-        default: nanoid(),
+    user_id: {
+        type: String,
         required: true,
-        unique:true
+        unique: true,
+        default: () => nanoid()
     },
-    first_name:{
-        type:String,
-        required:true,
+    first_name: {
+        type: String,
+        required: true
     },
-    last_name:{
-        type:String,
-        required:true,
+    last_name: {
+        type: String,
+        required: true
     },
-    mobile:{
-        type:String,
-        required:true,
+    mobile: {
+        type: String,
+        required: true,
+        unique: true,
+        validate: {
+            validator: function (v) {
+                return /\d{10}/.test(v);
+            },
+            message: props => `${props.value} is not a valid phone number!`
+        }
     },
-    email:{
-        type:String,
-        required:true,
-        unique:true
+    email: {
+        type: String,
+        required: true,
+        unique: true,
+        validate: {
+            validator: function (v) {
+                return /\S+@\S+\.\S+/.test(v);
+            },
+            message: props => `${props.value} is not a valid email!`
+        }
     },
-    dob:{
-        type:Date,
-        required:true,
-        default:Date.now
+    dob: {
+        type: Date,
+        required: false,
+        default: Date.now
     },
-    gender:{
-        type:String,
-        required:true,
+    gender: {
+        type: String,
+        required: false
     },
-    department:{
-        type:String,
-        required:true
+    department: {
+        type: String,
+        required: false,
     },
-    batch:{
-        type:String,
-        required:true,
+    batch: {
+        type: String,
+        required: false,
     },
-    college:{
-        type:String,
-        required:true,
+    college: {
+        type: String,
+        required: false,
+        default: "Kristu Jyoti College of Management and Technology"
     },
-    roles:{
-        type:Array,
-        required:true,
-        default:["General User"]
+    roles: {
+        type: Array,
+        required: true,
+        default: ["General User"]
     },
-    password:{
-        type:String,
-        required:true,
+    password: {
+        type: String,
+        required: true,
     },
     created_at: {
         type: Date,
@@ -68,6 +82,4 @@ const UserSchema = new mongoose.Schema({
     }
 })
 
-// module.exports = mongoose.model('User', UserSchema);
-var User = mongoose.model('User',UserSchema);
-module.exports = {User};
+module.exports = mongoose.model('User', UserSchema);
