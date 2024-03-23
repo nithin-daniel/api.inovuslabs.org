@@ -10,6 +10,9 @@ var cors = require('cors')
 const app = express();
 app.use(cors())
 
+const swagger = require('./swagger');
+swagger(app);
+
 const routes = require('./routes');
 
 app.use(express.json());

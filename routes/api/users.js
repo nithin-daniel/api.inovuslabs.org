@@ -21,6 +21,36 @@ const jwt = require('jsonwebtoken');
  * @example /api/v1/register
 **/
 
+
+
+/**
+ * @swagger
+ * /api/v1/register:
+ *  post:
+ *   summary: Register a new user
+ *  description: Register a new user
+ *  requestBody:
+ *   required: true
+ *  content:
+ *  application/json:
+ *  schema:
+ *  type: object
+ * properties:
+ * first_name:
+ * type: string
+ * last_name:
+ * type: string
+ * mobile:
+ * type: string
+ * email:
+ * type: string
+ * password:
+ * type: string
+ * dob:
+ * type: string
+ * 
+ **/ 
+
 router.post('/register', async (req, res) => {
     try {
 
