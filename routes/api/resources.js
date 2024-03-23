@@ -1,7 +1,7 @@
 
 const express = require('express');
 const router = express.Router();
-// const uuid = require('uuid');
+const { nanoid } = require('nanoid');
 const moment = require("moment");
 
 const db = require('../../config/db');
@@ -89,7 +89,7 @@ router.get('/', async (req, res) => {
 // router.post('/', (req, res) => {
 
 //     const newResource = new Resource({
-//         resource_id: uuid.v4(),
+//         resource_id: nanoid(10),
 //         title: req.body.title,
 //         description: req.body.description,
 //         category: req.body.category,
