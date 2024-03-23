@@ -5,8 +5,8 @@ const bcrypt = require('bcrypt');
 
 const db = require('../../config/db');
 const User = require('../../models/users');
-
-
+const verifyToken = require('../../middleware/auth')
+const jwt = require('jsonwebtoken');
 
 /**
  * @route   POST /api/v1/register
@@ -67,7 +67,37 @@ router.post('/register', async (req, res) => {
 
 
 router.post('/login', async (req, res) => {
+    try{
+        const { email, password } = req.body;
+        const user = await User.findOne({ email });
+        if (!user) {
+        return res.status(401).json({ error: 'Email not found' });
+        }
 
+        const passwordMatch = await bcrypt.compare(password, user.password);
+
+        if (!passwordMatch) {
+        return res.status(401).json({ error: 'Wrong Password' });
+        }
+
+        const token = jwt.sign({ email:email }, process.env.TOKEN_SECRET, {
+            expiresIn: '1h',
+            });
+        //     res.cookie(
+        //     "token", token, {
+        //     httpOnly: true,
+        //     secure: process.env.NODE_ENV !== 'development',
+        //     sameSite: "strict",
+        //     maxAge: jwtExpirySeconds * 1000
+        // });
+        res.status(200).json({ "Token":token });
+    }catch (error) {
+        res.status(500).json({ error:error.err });
+    }
+    // return res.status(200).json({ 
+    //     status: 200,
+    //     message: 'from sample header middleware checker'
+    // })
 })
 
 
