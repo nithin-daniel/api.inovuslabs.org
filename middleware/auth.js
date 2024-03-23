@@ -1,22 +1,33 @@
+
 const jwt = require('jsonwebtoken');
-const dotenv = require('dotenv');
-
-// get config vars
-dotenv.config();
+require('dotenv').config();
 
 
-function verifyToken(req, res, next) {
-    var token = req.headers['x-access-token'];
-    if (!token)
-      return res.status(403).send({ auth: false, message: 'No token provided.' });  
-    jwt.verify(token, config.secret, function(err, decoded) {
-      if (err)
-      return res.status(500).send({ auth: false, message: 'Failed to authenticate token.' });
-        
-      // if everything good, save to request for use in other routes
-      req.userId = decoded.id;
-      next();
-    });
-  }
-  
-  module.exports = verifyToken;
+const verifyToken = (req, res, next) => {
+    const token = req.header('Authorization');
+    if (!token) {
+        return res.status(401).json({
+            status: 401,
+            message: 'Unauthorized',
+            error: 'Access denied'
+        });
+    }
+
+    const bearer = token.split(' ');
+    const bearerToken = bearer[1];
+
+    try {
+        const decoded = jwt.verify(bearerToken, process.env.TOKEN_SECRET);
+        req.user = decoded;
+        next();
+    } catch (error) {
+        return res.status(400).json({
+            status: 400,
+            message: 'Invalid token',
+            error: error
+        });
+    }
+}
+
+
+module.exports = verifyToken;

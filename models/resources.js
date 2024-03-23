@@ -1,10 +1,13 @@
 
 const mongoose = require('mongoose');
+const { nanoid } = require('nanoid');
 
 const ResourceSchema = new mongoose.Schema({
     resource_id: {
         type: String,
-        required: true
+        required: true,
+        unique: true,
+        default: () => nanoid()
     },
     title: {
         type: String,
@@ -34,7 +37,6 @@ const ResourceSchema = new mongoose.Schema({
         required: false,
         default: Date.now
     }
-
 });
 
 module.exports = mongoose.model('Resource', ResourceSchema);
