@@ -1,13 +1,9 @@
 
 const express = require('express');
 const router = express.Router();
-const { nanoid } = require('nanoid');
-const moment = require("moment");
 
-const db = require('../../config/db');
 const Resource = require('../../models/resources');
-
-const verifyToken = require('../../middleware/_auth');
+const verifyToken = require('../../middleware/auth');
 
 
 
@@ -89,21 +85,19 @@ router.get('/', async (req, res) => {
 **/
 
 router.post('/', verifyToken, async (req, res) => {
-
     const newResource = new Resource({
-        resource_id: nanoid(),
         title: req.body.title,
         description: req.body.description,
         category: req.body.category,
         resources: req.body.resources
     });
 
-    newResource.save()
+    await newResource.save()
         .then(resource => {
             res.status(201).json({
                 status: 201,
                 message: 'Resource created successfully',
-                data: resource
+                // data: resource
             });
         })
         .catch(err => {
@@ -115,6 +109,78 @@ router.post('/', verifyToken, async (req, res) => {
         });
 });
 
+
+
+/**
+ * @route   PATCH /api/v1/resources/:id
+ * @desc    Update a resource by resource_id
+ * @access  Admin, Super Admin
+ * @params  title, description, category, resources
+ * @return  message, data
+ * @error   400, { error }
+ * @status  200, 400
+ * 
+ * @example /api/v1/resources/123456
+**/
+
+router.patch('/:id', verifyToken, async (req, res) => {
+    const resourceId = req.params.id;
+
+    await Resource.findOneAndUpdate({ resource_id: resourceId }, {
+        title: req.body.title,
+        description: req.body.description,
+        category: req.body.category,
+        resources: req.body.resources
+    })
+        .then(resource => {
+            res.status(200).json({
+                status: 200,
+                message: 'Resource updated successfully',
+                // data: resource
+            });
+        })
+        .catch(err => {
+            res.status(400).json({
+                status: 400,
+                message: 'Error updating resource',
+                error: err
+            });
+        });
+});
+
+
+
+/**
+ * @route   DELETE /api/v1/resources/:id
+ * @desc    Delete a resource by resource_id
+ * @access  Admin, Super Admin
+ * @params  resource_id
+ * @return  message, data
+ * @error   400, { error }
+ * @status  200, 400
+ * 
+ * @example /api/v1/resources/123456
+**/
+
+router.delete('/:id', verifyToken, async (req, res) => {
+    const resourceId = req.params.id;
+
+    await Resource.findOneAndDelete({ resource_id: resourceId })
+        .then(resource => {
+            res.status(200).json({
+                status: 200,
+                message: 'Resource deleted successfully',
+                // data: resource
+            });
+        })
+        .catch(err => {
+            res.status(400).json({
+                status: 400,
+                message: 'Error deleting resource',
+                error: err
+            });
+        });
+});
 
 
 

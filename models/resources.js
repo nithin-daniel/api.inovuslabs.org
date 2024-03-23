@@ -1,5 +1,6 @@
 
 const mongoose = require('mongoose');
+const { nanoid } = require('nanoid');
 
 const ResourceSchema = new mongoose.Schema({
     resource_id: {

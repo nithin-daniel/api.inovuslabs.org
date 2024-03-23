@@ -8,6 +8,8 @@ const User = require('../../models/users');
 const verifyToken = require('../../middleware/auth')
 const jwt = require('jsonwebtoken');
 
+
+
 /**
  * @route   POST /api/v1/register
  * @desc    Register a new user
@@ -49,7 +51,7 @@ router.post('/register', async (req, res) => {
             })
 
             await newUser.save()
-            return res.status(200).json({ 
+            return res.status(200).json({
                 status: 200,
                 message: 'User created successfully'
             })
@@ -66,27 +68,56 @@ router.post('/register', async (req, res) => {
 
 
 
+/**
+ * @route   POST /api/v1/login
+ * @desc    Login a user
+ * @access  Public
+ * @return  message
+ * @error   400, { error }
+ * @status  200, 401, 500
+ * 
+ * @example /api/v1/register
+**/
+
 router.post('/login', async (req, res) => {
-    try{
+    try {
+
         const { email, password } = req.body;
         const user = await User.findOne({ email });
+
         if (!user) {
-        return res.status(401).json({ error: 'Email not found' });
+            return res.status(401).json({
+                status: 401,
+                error: 'User not found'
+            });
         }
 
         const passwordMatch = await bcrypt.compare(password, user.password);
 
         if (!passwordMatch) {
-        return res.status(401).json({ error: 'Wrong Password' });
+            return res.status(401).json({
+                status: 401,
+                error: 'Invalid password'
+            });
         }
 
-        const token = jwt.sign({ email:email }, process.env.TOKEN_SECRET, {
-            expiresIn: '1h',
-            });
-        res.cookie('authcookie',token,{maxAge:86400000,httpOnly:true}) 
-        res.status(200).json({ "Token":token });
-    }catch (error) {
-        res.status(500).json({ error:error.err });
+        const token = jwt.sign({ email: email }, process.env.TOKEN_SECRET, {
+            expiresIn: '24h'
+        });
+
+        res.cookie('authcookie', token, { maxAge: 86400000, httpOnly: true })
+        res.status(200).json({
+            status: 200,
+            message: 'User logged in successfully',
+            token: token
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            status: 500,
+            message: 'Error logging in user',
+            error: error.err
+        });
     }
 })
 
