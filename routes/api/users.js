@@ -83,21 +83,11 @@ router.post('/login', async (req, res) => {
         const token = jwt.sign({ email:email }, process.env.TOKEN_SECRET, {
             expiresIn: '1h',
             });
-        //     res.cookie(
-        //     "token", token, {
-        //     httpOnly: true,
-        //     secure: process.env.NODE_ENV !== 'development',
-        //     sameSite: "strict",
-        //     maxAge: jwtExpirySeconds * 1000
-        // });
+        res.cookie('authcookie',token,{maxAge:86400000,httpOnly:true}) 
         res.status(200).json({ "Token":token });
     }catch (error) {
         res.status(500).json({ error:error.err });
     }
-    // return res.status(200).json({ 
-    //     status: 200,
-    //     message: 'from sample header middleware checker'
-    // })
 })
 
 
