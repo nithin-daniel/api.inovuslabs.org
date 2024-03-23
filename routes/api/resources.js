@@ -89,7 +89,7 @@ router.get('/', async (req, res) => {
 // router.post('/', (req, res) => {
 
 //     const newResource = new Resource({
-//         resource_id: nanoid(10),
+//         resource_id: nanoid(),
 //         title: req.body.title,
 //         description: req.body.description,
 //         category: req.body.category,

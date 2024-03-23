@@ -7,7 +7,7 @@ const RoleSchema = new mongoose.Schema({
         type: String,
         required: true,
         unique: true,
-        default: () => nanoid(10)
+        default: () => nanoid()
     },
     name: {
         type: String,
@@ -17,12 +17,12 @@ const RoleSchema = new mongoose.Schema({
     description: {
         type: String,
         required: false
-    }, 
+    },
     permissions: {
         type: Array,
         required: false,
         default: []
-    },   
+    },
     created_at: {
         type: Date,
         required: false,
@@ -33,7 +33,6 @@ const RoleSchema = new mongoose.Schema({
         required: false,
         default: Date.now
     }
-
 });
 
 module.exports = mongoose.model('Role', RoleSchema);
