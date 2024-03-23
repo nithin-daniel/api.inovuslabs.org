@@ -9,11 +9,11 @@ const UserSchema = new mongoose.Schema({
         required: true,
         unique:true
     },
-    firstName:{
+    first_name:{
         type:String,
         required:true,
     },
-    lastName:{
+    last_name:{
         type:String,
         required:true,
     },
@@ -50,7 +50,7 @@ const UserSchema = new mongoose.Schema({
     roles:{
         type:Array,
         required:true,
-        default:["user"]
+        default:["General User"]
     },
     password:{
         type:String,
