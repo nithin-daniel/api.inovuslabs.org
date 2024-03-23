@@ -6,13 +6,11 @@ const router = express.Router();
 const resourcesRouter = require('./resources');
 const permissionsRouter = require('./permissions');
 const rolesRouter = require('./roles');
-const userRouter = require('./users')
 
 
 router.use('/resources', resourcesRouter);
 router.use('/permissions', permissionsRouter);
 router.use('/roles', rolesRouter);
-router.use('/user', userRouter);
 
 
 module.exports = router;
