@@ -3,9 +3,7 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 
-const db = require('../../config/db');
-const User = require('../../models/users');
-const verifyToken = require('../../middleware/auth')
+const User = require('../models/users');
 const jwt = require('jsonwebtoken');
 
 
@@ -26,6 +24,25 @@ router.post('/register', async (req, res) => {
 
         let { first_name, last_name, mobile, email, password, dob, gender, department, batch, college } = req.body;
         let user = await User.findOne({ email: email });
+
+
+        if (password.length < 8) {
+            return res.status(400).json({
+                status: 400,
+                message: 'Password should be atleast 8 characters long'
+            })
+        } else if (password.search(/[a-z]/i) < 0) {
+            return res.status(400).json({
+                status: 400,
+                message: 'Password should contain atleast one letter'
+            })
+        } else if (password.search(/[0-9]/) < 0) {
+            return res.status(400).json({
+                status: 400,
+                message: 'Password should contain atleast one digit'
+            })
+        }
+
 
         if (user) {
             return res.status(400).json({

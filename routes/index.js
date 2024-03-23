@@ -2,9 +2,14 @@
 const express = require('express');
 const router = express.Router();
 
+
 const api = require('./api');
+const auth = require('./auth');
+
 
 router.use('/api/v1', api);
+router.use('/auth', auth);
+
 
 router.get('/', (req, res) => {
     res.json({
@@ -12,5 +17,6 @@ router.get('/', (req, res) => {
         message: 'API is working properly'
     });
 });
+
 
 module.exports = router;
