@@ -130,7 +130,8 @@ router.patch('/:id', verifyToken, async (req, res) => {
         title: req.body.title,
         description: req.body.description,
         category: req.body.category,
-        resources: req.body.resources
+        resources: req.body.resources,
+        updated_at: Date.now()
     })
         .then(resource => {
             res.status(200).json({
