@@ -7,7 +7,7 @@ const PermissionSchema = new mongoose.Schema({
         type: String,
         required: true,
         unique: true,
-        default: () => nanoid(10)
+        default: () => nanoid()
     },
     name: {
         type: String,
