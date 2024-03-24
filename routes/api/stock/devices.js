@@ -114,4 +114,80 @@ router.post('/', verifyToken, async (req, res) => {
 
 
 
+/**
+ * @route   PATCH /api/v1/stock/device/:id
+ * @desc    Update a device
+ * @access  Private
+ * @params  name, type, qty_purchased, price, description, image, date_of_purchase, vendor, remarks
+ * @return  message, data
+ * @error   400, { error }
+ * @status  200, 400
+ * 
+ * @example /api/v1/stock/devices/5f1d3f5f3c5e2f1b3c5e2f1b
+**/
+
+router.patch('/:id', verifyToken, async (req, res) => {
+
+    let { name, type, qty_available, qty_purchased } = req.body;
+
+    await Device.findOneAndUpdate({ device_id: req.params.id }, {
+        name: name,
+        type: type,
+        qty_available: qty_available,
+        qty_purchased: qty_purchased,
+        updated_at: Date.now()
+    })
+        .then(device => {
+            res.status(200).json({
+                status: 200,
+                message: 'Device updated successfully',
+                // data: device
+            });
+        })
+        .catch(err => {
+            res.status(400).json({
+                status: 400,
+                message: 'Error updating device',
+                error: err
+            });
+        });
+
+});
+
+
+
+/**
+ * @route   DELETE /api/v1/stock/device/:id
+ * @desc    Delete a device
+ * @access  Private
+ * @params  id
+ * @return  message, data
+ * @error   400, { error }
+ * @status  200, 400
+ * 
+ * @example /api/v1/stock/devices/5f1d3f5f3c5e2f1b3c5e2f1b
+**/
+
+router.delete('/:id', verifyToken, async (req, res) => {
+
+    await Device.findOneAndDelete({ device_id: req.params.id })
+        .then(device => {
+            res.status(200).json({
+                status: 200,
+                message: 'Device deleted successfully',
+                // data: device
+            });
+        })
+        .catch(err => {
+            res.status(400).json({
+                status: 400,
+                message: 'Error deleting device',
+                error: err
+            });
+        });
+
+});
+
+
+
 module.exports = router;
