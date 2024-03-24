@@ -27,22 +27,20 @@ const UserLogSchema = new mongoose.Schema({
                 type: Number,
                 required: true
             },
-            // approver_id: {
-            //     type: String,
-            //     required: true
-            // },
-            approver_id: [
+            approver: [
                 {
-                    type: String,
-                    required: true
+                    approver_id: {
+                        type: String,
+                        required: true
+                    },
+                    action: {
+                        type: String,
+                        required: true,
+                        default: 'entry.pending',
+                        enum: ['entry.approved', 'entry.rejected', 'exit.approved', 'exit.rejected']
+                    },
                 }
             ],
-            status: {
-                type: String,
-                required: true,
-                default: 'entry.pending',
-                enum: ['entry.pending', 'entry.approved', 'exit.pending', 'exit.approved']
-            },
             created_at: {
                 type: Date,
                 required: true

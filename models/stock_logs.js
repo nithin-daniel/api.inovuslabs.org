@@ -32,8 +32,8 @@ const StockLogSchema = new mongoose.Schema({
     mode: {
         type: String,
         required: true,
-        default: 'stock_in',
-        enum: ['stock_in', 'stock_out']
+        default: 'stock_issue',
+        enum: ['stock_issue', 'stock_return']
     },
     approver_id: {
         type: String,
