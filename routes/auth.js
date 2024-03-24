@@ -5,9 +5,7 @@ const bcrypt = require('bcrypt');
 
 const db = require('../../config/db');
 const User = require('../../models/users');
-const sessionHandle = require('../../models/sessionHandling')
 const verifyToken = require('../../middleware/auth')
-const sessionVerify = require('../../middleware/session')
 const jwt = require('jsonwebtoken');
 
 
@@ -106,18 +104,14 @@ router.post('/login', async (req, res) => {
         const token = jwt.sign({ email: email }, process.env.TOKEN_SECRET, {
             expiresIn: '24h'
         });
-        // const newSession = new User({
-        //     token:token,
-        //     author:email,
-        //     verified:true
-        // });
-        // await newSession.save()
+
         res.cookie('authcookie', token, { maxAge: 86400000, httpOnly: true })
         res.status(200).json({
             status: 200,
             message: 'User logged in successfully',
             token: token
         });
+
     } catch (error) {
         res.status(500).json({
             status: 500,
@@ -127,14 +121,6 @@ router.post('/login', async (req, res) => {
     }
 })
 
-router.get('/me',sessionVerify,async(req,res)=>{
-    // const newSession = new sessionHandle({
-    // token:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im5pdGhpbmRhbmllbDIwMThAZ21haWwuY29tIiwiaWF0IjoxNzExMjQ2ODUxLCJleHAiOjE3MTEzMzMyNTF9.a4b1lmH2f2LyLNcQ_z_tkCBci-0986c5h_A5jppBkk0",
-    // author:"nithindaniel2018@gmail.com",
-    // verified:true
-    // });
-    // await newSession.save()
-    res.sendStatus(200)
-})
+
 
 module.exports = router;
