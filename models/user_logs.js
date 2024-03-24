@@ -27,10 +27,16 @@ const UserLogSchema = new mongoose.Schema({
                 type: Number,
                 required: true
             },
-            approver_id: {
-                type: String,
-                required: true
-            },
+            // approver_id: {
+            //     type: String,
+            //     required: true
+            // },
+            approver_id: [
+                {
+                    type: String,
+                    required: true
+                }
+            ],
             status: {
                 type: String,
                 required: true,
@@ -41,6 +47,10 @@ const UserLogSchema = new mongoose.Schema({
                 type: Date,
                 required: true
             },
+            updated_at: {
+                type: Date,
+                required: true
+            }
         }
     ],
     created_at: {

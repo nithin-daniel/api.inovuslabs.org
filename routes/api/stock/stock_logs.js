@@ -226,7 +226,64 @@ router.patch('/:status/:stocklog_id', async (req, res) => {
     await StockLog.findOneAndUpdate({ stocklog_id: stocklog_id }, query)
         .then(async data => {
 
-            let userLog = await UserLog.findOne({ user_id: data.user_id })
+            await UserLog.findOne({ user_id: data.user_id })
+                .then(async userLog => {
+
+                    // if user log not found, create new user log
+                    if (!userLog) {
+                        userLog = new UserLog({
+                            user_id: data.user_id,
+                            components: [],
+                            created_at: Date.now(),
+                            updated_at: Date.now()
+                        });
+                    } else {
+                        userLog.updated_at = Date.now();
+                    }
+
+                    // add components to user log
+                    data.components.forEach(component => {
+
+                        // check if component already exists in user log
+                        // if exists, update qty. else, add new component
+                        let componentIndex = userLog.components.findIndex(c => c.device_id === component.device_id);
+
+                        if (componentIndex !== -1) {
+                            userLog.components[componentIndex].qty += component.qty;
+                            userLog.components[componentIndex].updated_at = Date.now();
+                            userLog.components[componentIndex].approver_id.push(approver_id);
+                        } else {
+                            userLog.components.push({
+                                device_id: component.device_id,
+                                name: component.name,
+                                qty: component.qty,
+                                approver_id: approver_id,
+                                status: query.status,
+                                created_at: userLog.created_at,
+                                updated_at: userLog.updated_at
+                            });
+                        }
+
+                    });
+
+                    // save user log
+                    await userLog.save()
+                        .then(data => {
+                            res.status(200).json({
+                                status: 200,
+                                message: 'Stock log approved successfully',
+                                // data: data
+                            });
+                        })
+                        .catch(err => {
+                            res.status(400).json({
+                                status: 400,
+                                message: 'Error approving stock log',
+                                error: err
+                            });
+                        });
+
+                })
                 .catch(err => {
                     res.status(400).json({
                         status: 400,
@@ -234,56 +291,6 @@ router.patch('/:status/:stocklog_id', async (req, res) => {
                         error: err
                     });
                 });
-
-            if (!userLog) {
-                userLog = new UserLog({
-                    user_id: data.user_id,
-                    components: data.components
-                });
-            }
-
-            // userLog.components = data.components.map(component => {
-            //     return {
-            //         device_id: component.device_id,
-            //         name: component.name,
-            //         qty: component.qty,
-            //         approver_id: approver_id,
-            //         status: query.status,
-            //         created_at: data.created_at
-            //     };
-            // });
-
-            // append to existing components
-            data.components.forEach(component => {
-                userLog.components.push({
-                    device_id: component.device_id,
-                    name: component.name,
-                    qty: component.qty,
-                    approver_id: approver_id,
-                    status: query.status,
-                    created_at: data.created_at
-                });
-            });
-
-            userLog.updated_at = Date.now();
-
-            console.log(userLog);
-
-            // userLog.save()
-            //     .then(data => {
-            //         res.status(200).json({
-            //             status: 200,
-            //             message: 'User log added successfully',
-            //             // data: data
-            //         });
-            //     })
-            //     .catch(err => {
-            //         res.status(400).json({
-            //             status: 400,
-            //             message: 'Error adding user log',
-            //             error: err
-            //         });
-            //     });
 
         })
         .catch(err => {
