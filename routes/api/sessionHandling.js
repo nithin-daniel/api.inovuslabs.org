@@ -2,14 +2,15 @@
 const express = require('express');
 const router = express.Router();
 const sessionHandling = require('../../models/sessionHandling');
+// const permissionValidator = require('../')
 
-router.get('/',async(req,res)=>{
+router.get('/',sessionHandling,async(req,res)=>{
     try{
         
-        const newIp = new sessionHandling({
-            ip:ip_final
-        });
-        await newIp.save()
+        // const newIp = new sessionHandling({
+        //     ip:ip_final
+        // });
+        // await newIp.save()
         // var os = require("os");
         // os.hostname();
         // console.log(os.hostname());
@@ -23,7 +24,17 @@ router.get('/',async(req,res)=>{
         });
     }
 })
+router.get('/check',async(req,res)=>{
+    try{
 
+    }catch(error){
+        res.status(500).json({
+            status: 500,
+            message: 'Error',
+            error: error.err
+        });
+    }
+});
 
 
 
