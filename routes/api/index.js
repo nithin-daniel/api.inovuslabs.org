@@ -14,7 +14,7 @@ router.use('/resources', resourcesRouter);
 router.use('/permissions', permissionsRouter);
 router.use('/roles', rolesRouter);
 router.use('/user', userRouter);
-router.use('/session', sessionRouter);
+router.use('/sessionHandle', sessionRouter);
 
 
 module.exports = router;

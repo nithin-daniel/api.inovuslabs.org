@@ -2,8 +2,17 @@ const mongoose = require('mongoose');
 
 
 const sessionHandlingSchema = new mongoose.Schema({
-    ip:{
-        type:String
+    token:{
+        type:String,
+        required:true
+    },
+    author:{
+        type:String,
+        required:true
+    },
+    verified:{
+        type:Boolean,
+        default:false
     }
 })
 

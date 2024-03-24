@@ -5,10 +5,7 @@ const sessionHandling = require('../../models/sessionHandling');
 
 router.get('/',async(req,res)=>{
     try{
-        ip=req.ip
-        ip = ip.split(':').slice(-1);
-        // console.log(ip[0]);
-        ip_final = ip[0]
+        
         const newIp = new sessionHandling({
             ip:ip_final
         });
