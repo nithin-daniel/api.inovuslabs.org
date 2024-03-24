@@ -6,6 +6,8 @@ const StockLog = require('../../../models/stock_logs');
 const UserLog = require('../../../models/user_logs');
 const verifyToken = require('../../../middleware/auth');
 
+const { stockLogApproval } = require('../../../helpers/stockHelper');
+
 
 
 /**
@@ -85,7 +87,7 @@ router.get('/', verifyToken, async (req, res) => {
  * @example /api/v1/stock/stock_logs
 **/
 
-router.post('/', async (req, res) => {
+router.post('/', verifyToken, async (req, res) => {
 
     let stockLog = new StockLog({
         user_id: req.body.user_id,
@@ -193,157 +195,36 @@ router.delete('/:stocklog_id', verifyToken, async (req, res) => {
 
 
 /**
- * @route   PATCH /api/v1/stock/stock_logs/:status/:stocklog_id
+ * @route   PATCH /api/v1/stock/stock_logs/approve/:stocklog_id
  * @desc    Stock log approval
  * @access  Public
- * @params  status, stocklog_id
+ * @params  stocklog_id
  * @return  message, data
  * @error   400, { error }
  * @status  200, 400
  * 
- * @example /api/v1/stock/stock_logs/approve/60b1e6e7f6d2b4e6e8f4b8e2   (approve)
- * @example /api/v1/stock/stock_logs/reject/60b1e6e7f6d2b4e6e8f4b8e2   (reject)
+ * @example /api/v1/stock/stock_logs/approve/60b1e6e7f6d2b4e6e8f4b8e2
 **/
 
-router.patch('/approve/:stocklog_id', async (req, res) => {
+router.patch('/approve/:stocklog_id', verifyToken, async (req, res) => {
 
+    let stocklog_id = req.params.stocklog_id;
     let approver_id = req.body.approver_id;
     let mode = req.body.mode;
-    let stocklog_id = req.params.stocklog_id;
 
-    let query = {
-        mode: mode,
-        status: mode === 'stock_return' ? 'exit.approved' : 'entry.approved',
-        approver_id: approver_id,
-        updated_at: Date.now()
-    };
-    
-    await StockLog.findOneAndUpdate({ stocklog_id: stocklog_id }, query)
-        .then(async data => {
-
-            let mode = data.mode;
-            mode === 'stock_return' ? query.status = 'exit.approved' : query.status = 'entry.approved';
-
-            await UserLog.findOne({ user_id: data.user_id })
-                .then(async userLog => {
-
-                    // if user log not found, create new user log
-                    if (!userLog) {
-                        userLog = new UserLog({
-                            user_id: data.user_id,
-                            components: [],
-                            created_at: Date.now(),
-                            updated_at: Date.now()
-                        });
-                    } else {
-                        userLog.updated_at = Date.now();
-                    }
-
-                    // add components to user log
-                    data.components.forEach(component => {
-
-                        // check if component already exists in user log
-                        // if exists, update qty. else, add new component
-                        let componentIndex = userLog.components.findIndex(c => c.device_id === component.device_id);
-
-                        if (componentIndex !== -1) {
-
-                            if(mode === 'stock_return') {
-                                userLog.components[componentIndex].qty -= component.qty;
-                            } else {
-                                userLog.components[componentIndex].qty += component.qty;
-                            }
-                            
-                            if (userLog.components[componentIndex].qty <= 0) {
-                                userLog.components.splice(componentIndex, 1);
-                            } else {
-                                userLog.components[componentIndex].updated_at = data.updated_at;
-                                userLog.components[componentIndex].approver.push({
-                                    approver_id: approver_id,
-                                    action: query.status
-                                });
-                            }
-
-                        } else {
-                            let newComponent = {
-                                device_id: component.device_id,
-                                name: component.name,
-                                qty: component.qty,
-                                created_at: data.updated_at,
-                                updated_at: data.updated_at,
-                                approver: [
-                                    {
-                                        approver_id: approver_id,
-                                        action: query.status
-                                    }
-                                ]
-                            };
-                            userLog.components.push(newComponent);
-                        }
-
-                    });
-
-
-                    // if no more components in user log, delete user log
-                    if (userLog.components.length == 0) {
-
-                        // delete user log
-                        await UserLog.findOneAndDelete({ user_id: data.user_id })
-                            .then(data => {
-                                res.status(200).json({
-                                    status: 200,
-                                    message: 'User log deleted successfully',
-                                    // data: data
-                                });
-                            })
-                            .catch(err => {
-                                res.status(400).json({
-                                    status: 400,
-                                    message: 'Error deleting user log',
-                                    error: err
-                                });
-                            });
-                        
-                    } else {
-
-                        // save user log
-                        await userLog.save()
-                            .then(data => {
-                                res.status(200).json({
-                                    status: 200,
-                                    message: 'Stock log approved successfully',
-                                    // data: data
-                                });
-                            })
-                            .catch(err => {
-                                res.status(400).json({
-                                    status: 400,
-                                    message: 'Error approving stock log',
-                                    error: err
-                                });
-                            });
-
-                    }
-
-                })
-                .catch(err => {
-                    res.status(400).json({
-                        status: 400,
-                        message: 'Error retrieving user log',
-                        error: err
-                    });
-                });
-            
-            // if data.mode === 'stock_in', add those components to user log
-            // if data.mode === 'stock_out', remove those components from user log
-            // if no more components in user log, delete user log
-
+    await stockLogApproval(stocklog_id, mode, approver_id)
+        .then(data => {
+            res.status(data.status).json({
+                status: data.status,
+                message: data.message,
+                // data: data
+            });
         })
         .catch(err => {
-            res.status(400).json({
-                status: 400,
-                message: 'Error approving stock log',
-                error: err
+            res.status(err.status).json({
+                status: err.status,
+                message: err.message,
+                error: err.error
             });
         });
 
