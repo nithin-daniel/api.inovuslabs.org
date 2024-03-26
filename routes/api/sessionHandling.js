@@ -3,18 +3,18 @@ const express = require('express');
 const router = express.Router();
 const sessionHandling = require('../../models/sessionHandling');
 
-router.get('/',async(req,res)=>{
+router.get('/',async(req,res,next)=>{
     try{
-        
-        const newIp = new sessionHandling({
-            ip:ip_final
-        });
-        await newIp.save()
-        // var os = require("os");
-        // os.hostname();
-        // console.log(os.hostname());
-        return res.status(200).json({status: 200,message: req.method})
-
+        token = ""
+        if (token){
+            const newLogin = sessionHandling.findOne({token});
+            const date = new Date();
+            newLogin.lastLogin = date;
+            await newLogin.save()
+            next();
+        }else{
+            return res.status(500).json({status: 500,message: "Blocking from middleware the user is not authenticated"});
+        }
     }catch(error){
         res.status(500).json({
             status: 500,
@@ -22,7 +22,7 @@ router.get('/',async(req,res)=>{
             error: error.err
         });
     }
-})
+});
 
 
 
