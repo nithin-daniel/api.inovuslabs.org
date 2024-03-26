@@ -100,8 +100,9 @@ router.post('/login', async (req, res) => {
     try {
 
         const { email, password } = req.body;
-        const user = await User.findOne({ email });
 
+        // Check if user exists
+        const user = await User.findOne({ email });
         if (!user) {
             return res.status(401).json({
                 status: 401,
@@ -109,8 +110,8 @@ router.post('/login', async (req, res) => {
             });
         }
 
+        // Check if password is correct
         const passwordMatch = await bcrypt.compare(password, user.password);
-
         if (!passwordMatch) {
             return res.status(401).json({
                 status: 401,
@@ -118,11 +119,34 @@ router.post('/login', async (req, res) => {
             });
         }
 
-        const token = jwt.sign({ email: email }, process.env.TOKEN_SECRET, {
+        // Check if user account is active
+        if (user.status === 'inactive') {
+            return res.status(401).json({
+                status: 401,
+                error: 'The user account is inactive. Please contact the administrator'
+            });
+        } else if (user.status === 'suspended') {
+            return res.status(401).json({
+                status: 401,
+                error: 'The user account is suspended. Please contact the administrator'
+            });
+        } else if (user.status === 'deleted') {
+            return res.status(401).json({
+                status: 401,
+                error: 'The user account is deleted. Please contact the administrator'
+            });
+        }
+        
+
+        // Create and assign a token to the user
+        const token = jwt.sign({ email: email, user_id: user.user_id }, process.env.TOKEN_SECRET, {
             expiresIn: '24h'
         });
 
-        res.cookie('authcookie', token, { maxAge: 86400000, httpOnly: true })
+        
+        // Set cookie
+        res.cookie('authcookie', token, { maxAge: 24 * 60 * 60 * 1000, httpOnly: true });
+        // res.header('auth-token', token).send(token);
         res.status(200).json({
             status: 200,
             message: 'User logged in successfully',

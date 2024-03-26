@@ -3,7 +3,8 @@ const express = require('express');
 const router = express.Router();
 
 const Device = require('../../../models/devices');
-const verifyToken = require('../../../middleware/auth');
+const verifyToken = require('../../../middleware/authentication');
+const checkPermission = require('../../../middleware/authorization');
 
 
 
@@ -84,7 +85,7 @@ router.get('/', async (req, res) => {
  * @example /api/v1/stock/devices
 **/
 
-router.post('/', verifyToken, async (req, res) => {
+router.post('/', verifyToken, checkPermission(['org.device.write']), async (req, res) => {
 
     let { name, type, qty_available, qty_purchased } = req.body;
 
@@ -95,7 +96,7 @@ router.post('/', verifyToken, async (req, res) => {
         qty_purchased: qty_purchased
     });
 
-    let device = await newDevice.save()
+    await newDevice.save()
         .catch(err => {
             res.status(400).json({
                 status: 400,
@@ -126,7 +127,7 @@ router.post('/', verifyToken, async (req, res) => {
  * @example /api/v1/stock/devices/5f1d3f5f3c5e2f1b3c5e2f1b
 **/
 
-router.patch('/:id', verifyToken, async (req, res) => {
+router.patch('/:id', verifyToken, checkPermission(['org.device.write']), async (req, res) => {
 
     let { name, type, qty_available, qty_purchased } = req.body;
 
@@ -168,7 +169,7 @@ router.patch('/:id', verifyToken, async (req, res) => {
  * @example /api/v1/stock/devices/5f1d3f5f3c5e2f1b3c5e2f1b
 **/
 
-router.delete('/:id', verifyToken, async (req, res) => {
+router.delete('/:id', verifyToken, checkPermission(['org.device.destroy']), async (req, res) => {
 
     await Device.findOneAndDelete({ device_id: req.params.id })
         .then(device => {
