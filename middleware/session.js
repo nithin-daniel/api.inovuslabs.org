@@ -19,7 +19,7 @@ const sessionVerify = async(req,res)=>{
             session.verified=false;
             return res.status(401).json({
                 error:'Token Expired'
-            })
+            });
         }else{
             return res.sendStatus(200)
         }    

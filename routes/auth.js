@@ -3,11 +3,11 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 
-const db = require('../../config/db');
-const User = require('../../models/users');
-const verifyToken = require('../../middleware/auth')
+const db = require('.././config/db');
+const User = require('.././models/users');
+const verifyToken = require('.././middleware/auth')
 const jwt = require('jsonwebtoken');
-
+const sessionHandling = require('.././models/sessionHandling');
 
 
 /**
@@ -104,8 +104,12 @@ router.post('/login', async (req, res) => {
         const token = jwt.sign({ email: email }, process.env.TOKEN_SECRET, {
             expiresIn: '24h'
         });
-
-        res.cookie('authcookie', token, { maxAge: 86400000, httpOnly: true })
+        const newIp = new sessionHandling({
+            "token":token,
+            "author":email,
+        });
+        await newIp.save()
+        // res.cookie('authcookie', token, { maxAge: 86400000, httpOnly: true })
         res.status(200).json({
             status: 200,
             message: 'User logged in successfully',
