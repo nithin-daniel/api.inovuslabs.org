@@ -36,30 +36,49 @@ const Role = require('../../models/roles');
 
 router.post('/seed', (req, res) => {
     let roles = [
-        {
-            name: 'Super Admin',
-            description: 'Super Admin Role',
-            permissions: [
-                'own.user.read',
-                'own.user.write',
-                'own.user.destroy',
+        // {
+        //     name: 'Super Admin',
+        //     description: 'Super Admin Role',
+        //     permissions: [
+        //         'own.user.read',
+        //         'own.user.write',
+        //         'own.user.destroy',
 
-                'org.user.read',
-                'org.user.write',
-                'org.user.destroy',
+        //         'org.user.read',
+        //         'org.user.write',
+        //         'org.user.destroy',
 
-                'org.resource.read',
-                'org.resource.write',
-                'org.resource.destroy'
-            ]
-        },
+        //         'org.resource.read',
+        //         'org.resource.write',
+        //         'org.resource.destroy'
+        //     ]
+        // },
+        // {
+        //     name: 'General User',
+        //     description: 'General User Role',
+        //     permissions: [
+        //         'own.user.read',
+        //         'own.user.write',
+        //         'own.user.destroy'
+        //     ]
+        // }
+
         {
-            name: 'General User',
-            description: 'General User Role',
+            name: 'Stock Manager',
+            description: 'Stock Manager Role',
             permissions: [
-                'own.user.read',
-                'own.user.write',
-                'own.user.destroy'
+                'org.device.read',
+                'org.device.write',
+                'org.device.destroy',
+
+                'org.stock_logs.read',
+                'org.stock_logs.write',
+                'org.stock_logs.approve',
+                'org.stock_logs.destroy',
+
+                'org.user_logs.read',
+                'org.user_logs.write',
+                'org.user_logs.destroy'
             ]
         }
     ];

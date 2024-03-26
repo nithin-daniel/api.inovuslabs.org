@@ -3,7 +3,8 @@ const express = require('express');
 const router = express.Router();
 
 const Resource = require('../../models/resources');
-const verifyToken = require('../../middleware/auth');
+const verifyToken = require('../../middleware/authentication');
+const checkPermission = require('../../middleware/authorization');
 
 
 
@@ -84,7 +85,7 @@ router.get('/', async (req, res) => {
  * @example /api/v1/resources
 **/
 
-router.post('/', verifyToken, async (req, res) => {
+router.post('/', verifyToken, checkPermission(['org.resource.write']), async (req, res) => {
     const newResource = new Resource({
         title: req.body.title,
         description: req.body.description,
@@ -123,14 +124,15 @@ router.post('/', verifyToken, async (req, res) => {
  * @example /api/v1/resources/123456
 **/
 
-router.patch('/:id', verifyToken, async (req, res) => {
+router.patch('/:id', verifyToken, checkPermission(['org.resource.write']), async (req, res) => {
     const resourceId = req.params.id;
 
     await Resource.findOneAndUpdate({ resource_id: resourceId }, {
         title: req.body.title,
         description: req.body.description,
         category: req.body.category,
-        resources: req.body.resources
+        resources: req.body.resources,
+        updated_at: Date.now()
     })
         .then(resource => {
             res.status(200).json({
@@ -162,7 +164,7 @@ router.patch('/:id', verifyToken, async (req, res) => {
  * @example /api/v1/resources/123456
 **/
 
-router.delete('/:id', verifyToken, async (req, res) => {
+router.delete('/:id', verifyToken, checkPermission(['org.resource.destroy']), async (req, res) => {
     const resourceId = req.params.id;
 
     await Resource.findOneAndDelete({ resource_id: resourceId })

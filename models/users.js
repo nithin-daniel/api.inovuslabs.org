@@ -70,6 +70,12 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    status: {
+        type: String,
+        required: true,
+        default: "inactive",
+        enum: ["active", "inactive", "suspended", "deleted"]
+    },
     created_at: {
         type: Date,
         required: false,
