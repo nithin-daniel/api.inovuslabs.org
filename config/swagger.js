@@ -7,14 +7,14 @@ const options = {
         "openapi": '3.0.0',
         "info": {
             "title": "Inovus API",
-            "description": "An all-in-one API for unified control and management over every facet of Inovus' digital ecosystem.",
+            "description": "An all-in-one API for unified control and management over every facet of [Inovus Labs](https://inovuslabs.org/) digital ecosystem.",
             "version": "1.0.0",
             "contact": {
                 "email": "mail@inovuslabs.org"
             },
             "license": {
-                "name": "MPL-2.0",
-                "url": "https://www.mozilla.org/en-US/MPL/2.0/"
+                "name": "MIT",
+                "url": "https://opensource.org/licenses/MIT"
             }
         },
         "servers": [
