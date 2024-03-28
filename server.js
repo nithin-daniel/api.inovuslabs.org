@@ -5,12 +5,13 @@ const db = require('./config/db');
 db.connect();
 
 const express = require('express');
-var cors = require('cors')
-
 const app = express();
+app.disable('x-powered-by');
+
+var cors = require('cors')
 app.use(cors())
 
-const swagger = require('./swagger');
+const swagger = require('./config/swagger');
 swagger(app);
 
 const routes = require('./routes');
@@ -37,8 +38,6 @@ app.use((err, req, res, next) => {
     })
 });
 
-
-
 app.listen((process.env.PORT || 3000), () => {
     console.log(`\n--- Server listening on port ${process.env.PORT || 3000}`)
-})
+});

@@ -9,45 +9,16 @@ const jwt = require('jsonwebtoken');
 
 
 /**
- * @route   POST /api/v1/register
+ * @route   POST /auth/register
  * @desc    Register a new user
  * @access  Public
  * @return  message
  * @error   400, { error }
  * @status  200, 400
  * 
- * @example /api/v1/register
+ * @example /auth/register
 **/
 
-
-
-/**
- * @swagger
- * /api/v1/register:
- *  post:
- *   summary: Register a new user
- *  description: Register a new user
- *  requestBody:
- *   required: true
- *  content:
- *  application/json:
- *  schema:
- *  type: object
- * properties:
- * first_name:
- * type: string
- * last_name:
- * type: string
- * mobile:
- * type: string
- * email:
- * type: string
- * password:
- * type: string
- * dob:
- * type: string
- * 
- **/ 
 
 router.post('/register', async (req, res) => {
     try {
@@ -116,14 +87,14 @@ router.post('/register', async (req, res) => {
 
 
 /**
- * @route   POST /api/v1/login
+ * @route   POST /auth/login
  * @desc    Login a user
  * @access  Public
  * @return  message
  * @error   400, { error }
  * @status  200, 401, 500
  * 
- * @example /api/v1/register
+ * @example /auth/login
 **/
 
 router.post('/login', async (req, res) => {
